@@ -26,15 +26,13 @@ jobs:
           node dist-cli/loom.js run examples/fib.loom
           node dist-cli/loom.js fork examples/collatz.loom --at 1 --set n=27
       - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: dist
 
   deploy:
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    # stays green until GitHub Pages is enabled (Settings → Pages → Source: GitHub Actions)
-    continue-on-error: true
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pages: write
