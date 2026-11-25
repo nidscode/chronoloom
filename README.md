@@ -4,6 +4,8 @@
 
 **A programming language with a time-travel debugger, a flame-chart profiler and forkable timelines.**
 
+**[Try it in your browser →](https://nidscode.github.io/chronoloom/)**
+
 Chronoloom records every statement a program executes. You can move backward and forward
 through the run, search the whole history for the moment something went wrong, evaluate code
 *in the past*, and set a variable to a different value at any step to re-run the program from
