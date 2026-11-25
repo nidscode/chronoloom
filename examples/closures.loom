@@ -1,0 +1,19 @@
+// Closures remember the scope they were born in.
+// Step into the counter calls (Right arrow) and watch the Variables panel:
+// each counter's count lives in its own captured scope, labelled "closure".
+
+fn makeCounter(label) {
+  let count = 0
+  return fn(amount) {
+    count += amount
+    return label + ": " + count
+  }
+}
+
+let apples = makeCounter("apples")
+let pears = makeCounter("pears")
+print(apples(1))
+print(apples(2))
+print(pears(10))
+print(apples(3))
+print(pears(5))

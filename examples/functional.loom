@@ -1,0 +1,23 @@
+// The standard library (map, filter, reduce, sortBy, …) is written in Loom
+// itself. Its own code stays off the timeline, but the callbacks you pass in
+// are recorded like any other code, so you can step into them.
+//
+// Try the console (Output panel, Console tab): count(words, fn(w) => len(w) == 3)
+
+let words = split("the quick brown fox jumps over the lazy dog", " ")
+let lengths = map(words, fn(w) => len(w))
+let long = filter(words, fn(w) => len(w) > 3)
+let total = reduce(lengths, fn(a, b) => a + b, 0)
+let byLength = sortBy(unique(words), fn(w) => len(w))
+let longest = byLength[-1]
+
+print("{len(words)} words, {total} letters")
+print("long words: {join(long, ", ")}")
+print("sorted by length: {byLength}")
+print("longest: {longest} ({len(longest)} letters)")
+
+let counts = {}
+each(words, fn(w) {
+  counts[w] = (counts[w] or 0) + 1
+})
+print("counts: {counts}")

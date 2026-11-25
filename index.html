@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chronoloom</title>
+    <meta name="description" content="A small programming language with a time-travel debugger, flame chart profiler and forkable timelines. By Nidhi Bivalkar." />
+    <meta name="author" content="Nidhi Bivalkar" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.5V8l2.5 1.5" /></svg>
+        <h1>Chronoloom</h1>
+      </div>
+      <div class="toolbar">
+        <label class="select-wrap" title="Load an example program">
+          <span class="sr-only">Example</span>
+          <select id="example-select"></select>
+        </label>
+        <button id="run-btn" class="btn primary" title="Compile & record (Ctrl+Enter)">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" /></svg>
+          Run
+        </button>
+        <button id="share-btn" class="btn" title="Copy a link to this program at the current step">Share</button>
+        <button id="help-btn" class="btn ghost" title="Help (?)">?</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <!-- column 1: code + time -->
+      <section class="col col-code">
+        <div class="panel editor-panel">
+          <div class="panel-head">
+            <h2>Program</h2>
+            <span id="status" class="status"></span>
+          </div>
+          <div id="editor" class="editor-host"></div>
+        </div>
+
+        <div class="panel time-panel">
+          <div class="transport" role="toolbar" aria-label="Time travel controls">
+            <button data-act="start" title="Go to start (Home)"><svg viewBox="0 0 16 16"><path d="M3 3h2v10H3zM14 3v10L6 8z" /></svg></button>
+            <button data-act="outBack" title="Reverse step out: back to where this call began ([)"><svg viewBox="0 0 16 16"><path d="M8 2l5 5h-3v6H6V7H3z" /></svg></button>
+            <button data-act="overBack" title="Step back over calls (Shift+Left)"><svg viewBox="0 0 16 16"><path d="M13 12c0-4-3-6-7-6V3L1 7.5 6 12V9c3 0 5 1 7 3z" /></svg></button>
+            <button data-act="back" title="Step back (Left)"><svg viewBox="0 0 16 16"><path d="M11 2v12L3 8z" /></svg></button>
+            <button data-act="play" class="play" title="Play / pause (Space)"><svg class="i-play" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" /></svg><svg class="i-pause" viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z" /></svg></button>
+            <button data-act="fwd" title="Step forward / into (Right)"><svg viewBox="0 0 16 16"><path d="M5 2v12l8-6z" /></svg></button>
+            <button data-act="over" title="Step over calls (Shift+Right)"><svg viewBox="0 0 16 16"><path d="M3 12c0-4 3-6 7-6V3l5 4.5-5 4.5V9c-3 0-5 1-7 3z" /></svg></button>
+            <button data-act="out" title="Step out of the current call (])"><svg viewBox="0 0 16 16"><path d="M8 14l5-5h-3V3H6v6H3z" /></svg></button>
+            <button data-act="end" title="Go to end (End)"><svg viewBox="0 0 16 16"><path d="M11 3h2v10h-2zM2 3v10l8-5z" /></svg></button>
+            <span class="sep" aria-hidden="true"></span>
+            <button data-act="contBack" title="Reverse continue: previous breakpoint hit (Shift+F8)"><svg viewBox="0 0 16 16"><path d="M8 3v10L2 8zM15 3v10L9 8z" /></svg></button>
+            <button data-act="cont" title="Continue: next breakpoint hit (F8)"><svg viewBox="0 0 16 16"><path d="M1 3v10l6-5zM8 3v10l6-5z" /></svg></button>
+            <label class="speed" title="Playback speed">
+              <span>speed</span>
+              <input id="speed" type="range" min="1" max="10" value="5" />
+            </label>
+            <div id="pos-label" class="pos-label"></div>
+          </div>
+          <form id="find-form" class="find" autocomplete="off">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2" /><path d="M10.2 10.2l3.5 3.5" /></svg>
+            <input id="find-input" class="mono" placeholder="Find steps where…  e.g.  total > 20  or  i == j" spellcheck="false" aria-label="Find steps where an expression is true" />
+            <span id="find-status" class="find-status"></span>
+            <button type="button" id="find-prev" class="icon-btn" title="Previous match (Shift+Enter)"><svg viewBox="0 0 16 16"><path d="M4 10l4-4 4 4" /></svg></button>
+            <button type="button" id="find-next" class="icon-btn" title="Next match (Enter)"><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" /></svg></button>
+            <button type="button" id="find-clear" class="icon-btn" title="Clear"><svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" /></svg></button>
+          </form>
+          <div class="scrubber-wrap">
+            <canvas id="flame" aria-label="Flame chart of every function call over time. Click or drag to move to a step, scroll to zoom."></canvas>
+            <div id="flame-tip" class="scrub-tip" hidden></div>
+          </div>
+          <div class="legend">
+            <span>scroll to zoom · double-click a call to zoom in · double-click empty space to zoom out</span>
+            <button id="zoom-reset" class="link-btn" hidden>reset zoom</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- column 2: machine state -->
+      <section class="col col-state">
+        <div class="panel vars-panel">
+          <div class="panel-head">
+            <h2>Variables</h2>
+          </div>
+          <div id="banner"></div>
+          <div class="scroll">
+            <div id="watch" class="watch"></div>
+            <div id="vars"></div>
+          </div>
+        </div>
+        <div class="panel stack-panel">
+          <div class="panel-head"><h2>Call stack</h2></div>
+          <div id="stack" class="scroll"></div>
+        </div>
+        <div class="panel data-panel">
+          <div class="panel-head">
+            <h2>Data</h2>
+          </div>
+          <div id="data" class="scroll"></div>
+        </div>
+      </section>
+
+      <!-- column 3: effects across timelines -->
+      <section class="col col-world">
+        <div class="panel output-panel" data-tabs="top">
+          <div class="panel-head tabs" role="tablist">
+            <button class="tab active" role="tab" data-tab="output">Output <span id="output-count" class="hint"></span></button>
+            <button class="tab" role="tab" data-tab="console">Console</button>
+          </div>
+          <div class="tab-body" data-body="output"><div id="output" class="scroll mono"></div></div>
+          <div class="tab-body" data-body="console" hidden><div id="console" class="console"></div></div>
+        </div>
+        <div class="panel multiverse-panel">
+          <div class="panel-head">
+            <h2>Timelines</h2>
+          </div>
+          <div id="multiverse" class="scroll"></div>
+        </div>
+        <div class="panel chart-panel" data-tabs="bottom">
+          <div class="panel-head tabs" role="tablist">
+            <button class="tab active" role="tab" data-tab="history">Value history <span id="chart-title" class="hint"></span></button>
+            <button class="tab" role="tab" data-tab="profile">Profile</button>
+            <button class="tab" role="tab" data-tab="breakpoints">Breakpoints <span id="bp-count" class="hint"></span></button>
+          </div>
+          <div class="tab-body" data-body="history"><div id="chart"></div></div>
+          <div class="tab-body" data-body="profile" hidden><div id="profile" class="scroll"></div></div>
+          <div class="tab-body" data-body="breakpoints" hidden><div id="breakpoints" class="scroll"></div></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">Chronoloom by Nidhi Bivalkar</footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <dialog id="help-dialog" class="help-dialog"></dialog>
+
+    <script type="module" src="/src/ui/main.ts"></script>
+  </body>
+</html>

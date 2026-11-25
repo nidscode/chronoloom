@@ -1,0 +1,22 @@
+// Recursive Fibonacci. The flame chart under the editor shows every call:
+// each box is one fib(n), nested by call depth. Scroll on it to zoom,
+// double-click a box to zoom into that call.
+//
+// Try: Step Out ( ] ) to leave the current call, Shift+Right to step over one,
+// open the Profile tab, or set a breakpoint on line 13 with condition n == 6
+// and press F8 / Shift+F8 to jump between those calls.
+
+fn fib(n) {
+  if n < 2 {
+    return n
+  }
+  let a = fib(n - 1)
+  let b = fib(n - 2)
+  return a + b
+}
+
+let results = []
+for i in 0..10 {
+  push(results, fib(i))
+}
+print(results)

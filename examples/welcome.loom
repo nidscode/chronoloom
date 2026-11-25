@@ -1,0 +1,31 @@
+// Chronoloom records every statement this program executes.
+//
+//  - Drag the timeline under the editor to move between steps
+//  - Left / Right arrows step back and forward
+//  - Shift + arrows step over function calls; [ and ] step out
+//  - The pencil next to a variable sets a new value and re-runs from that step
+//  - The arrows next to a variable go to its previous / next change
+//  - Click the strip left of the line numbers to go to the next run of that line
+
+fn greet(name, times) {
+  let message = "Hello, " + name + "!"
+  for i in 0..times {
+    print(message + " #" + (i + 1))
+  }
+  return len(message) * times
+}
+
+let total = greet("time traveler", 3)
+print("characters printed:", total)
+
+// Primes below 40, trial division
+let primes = []
+for n in 2..40 {
+  let isPrime = true
+  for d in 2..n {
+    if d * d > n { break }
+    if n % d == 0 { isPrime = false; break }
+  }
+  if isPrime { push(primes, n) }
+}
+print(primes)

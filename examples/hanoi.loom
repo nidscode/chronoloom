@@ -1,0 +1,17 @@
+// Towers of Hanoi: three pegs stored as arrays inside a record.
+// The Data panel draws each peg. Step over (Shift+Right) the recursive calls
+// to move a whole tower at once, or step into them to see every disc move.
+
+let pegs = {A: [5, 4, 3, 2, 1], B: [], C: []}
+let moves = 0
+
+fn hanoi(n, from, to, via) {
+  if n == 0 { return }
+  hanoi(n - 1, from, via, to)
+  push(pegs[to], pop(pegs[from]))
+  moves += 1
+  hanoi(n - 1, via, to, from)
+}
+
+hanoi(5, "A", "C", "B")
+print("solved in", moves, "moves:", pegs)

@@ -1,0 +1,38 @@
+// Quicksort with Lomuto partitioning. Inside partition(), the array a
+// is the very same object as the global data (the Data panel says so):
+// mutations through one name are visible through the other.
+
+seed(7)
+let data = []
+for k in 0..16 {
+  push(data, randint(1, 60))
+}
+
+fn swap(a, x, y) {
+  let t = a[x]
+  a[x] = a[y]
+  a[y] = t
+}
+
+fn partition(a, lo, hi) {
+  let pivot = a[hi]
+  let i = lo
+  for j in lo..hi {
+    if a[j] < pivot {
+      swap(a, i, j)
+      i += 1
+    }
+  }
+  swap(a, i, hi)
+  return i
+}
+
+fn quicksort(a, lo, hi) {
+  if lo >= hi { return }
+  let p = partition(a, lo, hi)
+  quicksort(a, lo, p - 1)
+  quicksort(a, p + 1, hi)
+}
+
+quicksort(data, 0, len(data) - 1)
+print(data)

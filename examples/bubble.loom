@@ -1,0 +1,30 @@
+// Bubble sort, one comparison at a time. Press Play and watch the bars.
+// The little markers under the bars are integer variables (i, j) that
+// currently point into the array.
+//
+// Then: rewind to the start, click the pencil next to xs, type a new array
+// such as [5, 4, 3, 2, 1] and see a second timeline unfold.
+
+seed(2026)
+let xs = []
+for k in 0..14 {
+  push(xs, randint(5, 99))
+}
+
+let swaps = 0
+let n = len(xs)
+for i in 0..n {
+  let swapped = false
+  for j in 0..n - i - 1 {
+    if xs[j] > xs[j + 1] {
+      let tmp = xs[j]
+      xs[j] = xs[j + 1]
+      xs[j + 1] = tmp
+      swaps += 1
+      swapped = true
+    }
+  }
+  if not swapped { break }
+}
+print("sorted:", xs)
+print("swaps:", swaps)

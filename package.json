@@ -1,0 +1,50 @@
+{
+  "name": "chronoloom",
+  "version": "1.0.0",
+  "description": "A tiny programming language with a time-travel debugger and forkable timelines. Scrub through execution, rewind, change the past, and watch a new timeline unfold.",
+  "author": "Nidhi Bivalkar",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "bin": {
+    "loom": "./dist-cli/loom.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:cli": "esbuild src/cli/main.ts --bundle --platform=node --format=esm --target=node18 --outfile=dist-cli/loom.js --banner:js=\"#!/usr/bin/env node\"",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "loom": "npm run build:cli --silent && node dist-cli/loom.js"
+  },
+  "keywords": [
+    "programming-language",
+    "interpreter",
+    "bytecode-vm",
+    "time-travel-debugging",
+    "debugger",
+    "visualization",
+    "education"
+  ],
+  "devDependencies": {
+    "@types/node": "^26.6.10",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.2"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "^6.20.4",
+    "@codemirror/commands": "^6.11.2",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/lint": "^6.9.8",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.44.0",
+    "@lezer/highlight": "^1.2.5",
+    "codemirror": "^6.0.2"
+  }
+}

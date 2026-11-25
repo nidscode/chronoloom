@@ -1,0 +1,41 @@
+// Errors are values you can catch. Runtime errors (like a bad index or a
+// failed conversion) become records with a message and a line, and the stack
+// unwinds to the nearest try. In the flame chart, calls cut short by a throw
+// simply end early.
+
+fn parseScore(text) {
+  let n = num(text)
+  if n < 0 or n > 100 {
+    throw "out of range: {n}"
+  }
+  return n
+}
+
+fn describe(err) {
+  if type(err) == "record" { return err.message }
+  return err
+}
+
+fn average(entries) {
+  let total = 0
+  let ok = 0
+  for e in entries {
+    try {
+      total += parseScore(e)
+      ok += 1
+    } catch err {
+      print("skipped {e}: {describe(err)}")
+    }
+  }
+  return total / ok
+}
+
+let raw = ["90", "75", "abc", "120", "88"]
+print("average: {round(average(raw))}")
+
+try {
+  let xs = [1, 2, 3]
+  print(xs[10])
+} catch err {
+  print("caught on line {err.line}: {err.message}")
+}

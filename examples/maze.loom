@@ -1,0 +1,66 @@
+// Breadth-first search through a maze. Walls are #, the flood fill writes
+// each cell's distance from the start, then the path is traced back with *.
+
+let plan = [
+  "S..#......",
+  ".#.#.####.",
+  ".#...#....",
+  ".####.#.#.",
+  "......#.#.",
+  "#.#####.#.",
+  "..#.....#.",
+  ".##.###.##",
+  "....#....E",
+]
+
+let rows = len(plan)
+let cols = len(plan[0])
+let maze = grid(rows, cols, 0)
+let start = nil
+let goal = nil
+for r in 0..rows {
+  for c in 0..cols {
+    let ch = plan[r][c]
+    if ch == "#" { maze[r][c] = "#" }
+    if ch == "S" { start = [r, c] }
+    if ch == "E" { goal = [r, c] }
+  }
+}
+
+// flood fill: distances start at 1 so the start cell is visible
+let queue = [start]
+let head = 0
+maze[start[0]][start[1]] = 1
+let dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+while head < len(queue) {
+  let cell = queue[head]
+  head += 1
+  for d in dirs {
+    let r = cell[0] + d[0]
+    let c = cell[1] + d[1]
+    if r >= 0 and r < rows and c >= 0 and c < cols and maze[r][c] == 0 {
+      maze[r][c] = maze[cell[0]][cell[1]] + 1
+      push(queue, [r, c])
+    }
+  }
+}
+
+// walk back from the goal along decreasing distances
+let r = goal[0]
+let c = goal[1]
+let length = maze[r][c] - 1
+while maze[r][c] != 1 {
+  let here = maze[r][c]
+  maze[r][c] = "*"
+  for d in dirs {
+    let nr = r + d[0]
+    let nc = c + d[1]
+    if nr >= 0 and nr < rows and nc >= 0 and nc < cols and maze[nr][nc] == here - 1 {
+      r = nr
+      c = nc
+      break
+    }
+  }
+}
+maze[r][c] = "*"
+print("shortest path length:", length)

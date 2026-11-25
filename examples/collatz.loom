@@ -1,0 +1,21 @@
+// The Collatz conjecture: halve even numbers, triple-and-add-one odd ones.
+// Every starting number seems to fall back to 1 eventually.
+//
+// 1. Click the plot button next to n to plot its path.
+// 2. Go to the start (Home key), step once so n exists, click the pencil
+//    next to n and type 27. A new timeline appears in the Timelines panel.
+// 3. The chart overlays the parent timeline so you can compare them.
+
+let n = 7
+let steps = 0
+let peak = n
+while n != 1 {
+  if n % 2 == 0 {
+    n = n / 2
+  } else {
+    n = 3 * n + 1
+  }
+  steps += 1
+  peak = max(peak, n)
+}
+print("steps:", steps, "peak:", peak)

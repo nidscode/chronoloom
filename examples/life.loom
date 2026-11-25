@@ -1,0 +1,52 @@
+// Conway's Game of Life on a wrapping board, starring a glider and a blinker.
+// The Data panel draws any 2D array as a grid. Scrub the timeline to watch
+// each generation being built cell by cell.
+
+let size = 10
+let board = grid(size, size, 0)
+
+// a glider
+board[0][1] = 1
+board[1][2] = 1
+board[2][0] = 1
+board[2][1] = 1
+board[2][2] = 1
+// a blinker
+board[6][6] = 1
+board[6][7] = 1
+board[6][8] = 1
+
+fn neighbours(b, r, c) {
+  let count = 0
+  for dr in -1..2 {
+    for dc in -1..2 {
+      if dr != 0 or dc != 0 {
+        count += b[(r + dr) % size][(c + dc) % size]
+      }
+    }
+  }
+  return count
+}
+
+fn step(b) {
+  let next = grid(size, size, 0)
+  for r in 0..size {
+    for c in 0..size {
+      let n = neighbours(b, r, c)
+      if n == 3 or (n == 2 and b[r][c] == 1) {
+        next[r][c] = 1
+      }
+    }
+  }
+  return next
+}
+
+for gen in 0..6 {
+  board = step(board)
+}
+
+let alive = 0
+for row in board {
+  alive += sum(row)
+}
+print("alive after 6 generations:", alive)

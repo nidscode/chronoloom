@@ -1,0 +1,19 @@
+// Estimating pi by throwing random darts at a unit square.
+// Randomness in Loom is seeded and lives inside the machine state, so every
+// replay is identical. That is what makes time travel possible.
+//
+// Plot estimate to watch it converge, then fork with a bigger darts count.
+
+seed(1)
+let darts = 300
+let inside = 0
+let estimate = 0
+for k in 1..darts + 1 {
+  let x = random()
+  let y = random()
+  if x * x + y * y <= 1 {
+    inside += 1
+  }
+  estimate = 4 * inside / k
+}
+print("pi is roughly", estimate)
